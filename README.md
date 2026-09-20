@@ -70,7 +70,19 @@ Then edit `widget/index.jsx` and set `BASE` to the folder containing
 - Übersicht menu bar icon → **Preferences…** → check **Enable interaction**
 - System Settings → Privacy & Security → Accessibility → enable **Übersicht**
 
-**6. Optional: global hotkey** with [Hammerspoon](https://www.hammerspoon.org/)
+**6. Optional: native menu bar item for the weekly limit**
+
+```bash
+BIONIC_DASHBOARD_PATH="$PWD" ./build-menubar.sh
+```
+
+Compiles `BionicLimit.swift` (needs `swiftc` from the Xcode CLTs), installs
+`~/Applications/BionicLimit.app` and a LaunchAgent with autostart. Shows
+`⚡ 29.8%` (yellow ≤ 25%, red ≤ 10%) with a dropdown: tokens left, reset
+countdown, data timestamp, and "Open dashboard". Refreshes every 60 s from
+Bionic's `cloud-account.json` cache.
+
+**7. Optional: global hotkey** with [Hammerspoon](https://www.hammerspoon.org/)
 
 ```lua
 -- ~/.hammerspoon/init.lua
