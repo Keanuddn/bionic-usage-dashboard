@@ -251,10 +251,14 @@
   <span class="label">QUELLE: NG-SESSIONS.SQLITE · LOKAL</span>
 </footer>
 
-<script src="data.js"></script>
+<script>function loadDataScript(cb){
+  var s = document.createElement("script");
+  s.src = "data.js?t=" + Date.now();
+  s.onload = cb;
+  document.body.appendChild(s);
+}</script>
 <script>
 (function () {
-  const D = window.BIONIC_DATA;
   const fmt = n => n.toLocaleString("de-DE");
   const kfmt = n => n >= 1e6 ? (n / 1e6).toFixed(n >= 1e7 ? 0 : 1) + "M"
                   : n >= 1e3 ? Math.round(n / 1e3) + "k" : String(n);
@@ -276,6 +280,8 @@
   }
 
   function render() {
+    const D = window.BIONIC_DATA;
+    if (!D) return;
     const P = PERIODS[period];
     const t = D.totals[P.key];
     const total = t.input + t.output;
@@ -429,7 +435,9 @@
     render();
   });
 
-  render();
+  // initial + auto-refresh every 60 s (keeps current toggle state)
+  loadDataScript(render);
+  setInterval(function () { loadDataScript(render); }, 60000);
 })();
 </script>
 </body>
