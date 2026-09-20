@@ -18,7 +18,7 @@ func readDict(_ path: String) -> [String: Any]? {
 
 func tokensPerMicrocredit() -> Double {
     // calibration from the dashboard's config.json: weekly budget / 10000 microcredits
-    if let cfg = readDict(NSHomeDirectory() + "/.lmstudio/apps/bionic/projects/d49037d8-47f4-5808-9028-c707de117f8f/workspace/bionic-dashboard/config.json"),
+    if let cfg = readDict(dashPath + "/config.json"),
        let budget = cfg["weekly_token_budget"] as? Double {
         return budget / 10000.0
     }
