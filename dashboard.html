@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BIONIC // USAGE</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Doto:wght@400;700;900&family=Space+Grotesk:wght@300;400;500&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F5F5F5;
+    --surface: #FFFFFF;
+    --surface-raised: #F0F0F0;
+    --border: #E8E8E8;
+    --border-visible: #CCCCCC;
+    --text-primary: #1A1A1A;
+    --text-secondary: #666666;
+    --text-disabled: #999999;
+    --text-display: #000000;
+    --success: #4A9E5C;
+    --warning: #D4A843;
+    --accent: #D71921;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { background: var(--bg); }
+  body {
+    font-family: "Space Grotesk", system-ui, sans-serif;
+    font-weight: 400;
+    color: var(--text-primary);
+    background: var(--bg);
+    max-width: 880px;
+    margin: 0 auto;
+    padding: 64px 32px 96px;
+  }
+  .label {
+    font-family: "Space Mono", monospace;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-secondary);
+  }
+  .mono { font-family: "Space Mono", monospace; }
+
+  /* ---------- header ---------- */
+  header {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin-bottom: 96px;
+  }
+  h1 {
+    font-family: "Space Mono", monospace;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+  }
+  .toggle { display: flex; gap: 0; }
+  .toggle button {
+    font-family: "Space Mono", monospace;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    padding: 8px 16px;
+    background: transparent;
+    border: 1px solid var(--border-visible);
+    border-right: none;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: color 150ms cubic-bezier(0.25,0.1,0.25,1), background 150ms cubic-bezier(0.25,0.1,0.25,1);
+  }
+  .toggle button:last-child { border-right: 1px solid var(--border-visible); }
+  .toggle button.active { background: var(--text-display); color: var(--bg); border-color: var(--text-display); }
+  .toggle button:hover:not(.active) { color: var(--text-primary); }
+
+  /* ---------- hero ---------- */
+  .hero { margin-bottom: 96px; }
+  .hero .label { margin-bottom: 16px; display: block; }
+  .hero-num {
+    font-family: "Doto", "Space Mono", monospace;
+    font-weight: 900;
+    font-size: clamp(64px, 12vw, 128px);
+    line-height: 1.0;
+    letter-spacing: -0.03em;
+    color: var(--text-display);
+    font-variant-numeric: tabular-nums;
+  }
+  .hero-num .unit {
+    font-family: "Space Mono", monospace;
+    font-weight: 400;
+    font-size: 14px;
+    letter-spacing: 0.08em;
+    color: var(--text-secondary);
+    vertical-align: super;
+    margin-left: 8px;
+  }
+  .hero-sub {
+    display: flex;
+    gap: 32px;
+    margin-top: 24px;
+  }
+  .hero-sub .stat .v { font-family: "Space Mono", monospace; font-size: 16px; }
+  .hero-sub .stat .l { margin-top: 2px; }
+
+  /* ---------- sections ---------- */
+  section { margin-bottom: 96px; }
+  section > .label { display: block; margin-bottom: 24px; }
+
+  /* progress */
+  .budget-row { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 8px; }
+  .budget-pct { font-family: "Space Mono", monospace; font-size: 24px; }
+  .progress {
+    height: 12px;
+    display: flex;
+    gap: 2px;
+  }
+  .progress span { flex: 1; background: var(--border); }
+  .progress span.filled { background: var(--text-display); }
+  .progress.warn span.filled { background: var(--warning); }
+  .progress.over span.filled { background: var(--accent); }
+  .budget-note { margin-top: 8px; }
+
+  /* daily chart */
+  .chart {
+    display: flex;
+    align-items: flex-end;
+    gap: 4px;
+    height: 120px;
+    padding-top: 8px;
+  }
+  .chart .bar { flex: 1; display: flex; flex-direction: column; justify-content: flex-end; gap: 2px; height: 100%; }
+  .chart .bar .in { background: var(--text-display); min-height: 0; }
+  .chart .bar .out { background: var(--text-disabled); min-height: 0; }
+  .chart-meta { display: flex; gap: 24px; margin-top: 16px; }
+  .legend { display: inline-block; width: 8px; height: 8px; margin-right: 6px; vertical-align: baseline; }
+
+  /* lists */
+  .rowlist .row {
+    display: grid;
+    grid-template-columns: 32px 1fr 200px 96px;
+    gap: 16px;
+    align-items: baseline;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .rowlist .row:first-child { border-top: 1px solid var(--border); }
+  .row .rank { font-family: "Space Mono", monospace; font-size: 11px; color: var(--text-disabled); }
+  .row .name { font-size: 15px; }
+  .row .name .model { display: block; font-family: "Space Mono", monospace; font-size: 10px; letter-spacing: 0.06em; color: var(--text-disabled); margin-top: 2px; text-transform: uppercase; }
+  .row .barwrap { position: relative; height: 8px; background: var(--surface-raised); }
+  .row .barwrap i { position: absolute; inset: 0 auto 0 0; background: var(--text-display); }
+  .row .val { font-family: "Space Mono", monospace; font-size: 13px; text-align: right; font-variant-numeric: tabular-nums; }
+
+  .toolgrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 8px 32px; }
+  .toolgrid .t { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid var(--border); }
+  .toolgrid .t .n { font-family: "Space Mono", monospace; font-size: 12px; }
+  .toolgrid .t .c { font-family: "Space Mono", monospace; font-size: 12px; color: var(--text-secondary); }
+
+  /* achievements */
+  .badges { display: flex; flex-wrap: wrap; gap: 12px; }
+  .badge {
+    font-family: "Space Mono", monospace;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    padding: 10px 16px;
+    border: 1px solid var(--border-visible);
+    color: var(--text-disabled);
+    text-transform: uppercase;
+  }
+  .badge.earned {
+    background: var(--text-display);
+    border-color: var(--text-display);
+    color: var(--bg);
+  }
+  .badge .hint { display: block; font-size: 9px; letter-spacing: 0.04em; margin-top: 4px; opacity: 0.7; }
+
+  footer {
+    margin-top: 128px;
+    display: flex;
+    justify-content: space-between;
+  }
+  footer .label { font-size: 10px; }
+  a { color: var(--text-secondary); }
+
+  [data-view="month"] .only-week { display: none; }
+  [data-view="week"] .only-month { display: none; }
+</style>
+</head>
+<body data-view="week">
+
+<header>
+  <h1>BIONIC&nbsp;//&nbsp;USAGE</h1>
+  <div class="toggle" id="toggle">
+    <button data-period="week" class="active">WOCHE</button>
+    <button data-period="month">MONAT</button>
+    <button data-period="all">ALLE</button>
+  </div>
+</header>
+
+<div class="hero">
+  <span class="label" id="hero-label">TOKENS · DIESE WOCHE</span>
+  <div class="hero-num"><span id="hero-num">0</span><span class="unit">TOKENS</span></div>
+  <div class="hero-sub">
+    <div class="stat"><div class="v mono" id="hero-in">0</div><div class="label l">INPUT</div></div>
+    <div class="stat"><div class="v mono" id="hero-out">0</div><div class="label l">OUTPUT</div></div>
+    <div class="stat"><div class="v mono" id="hero-delta">—</div><div class="label l">VS. VORPERIODE</div></div>
+    <div class="stat"><div class="v mono" id="hero-streak">0</div><div class="label l">TAGE STREAK</div></div>
+  </div>
+</div>
+
+<section id="budget-section">
+  <span class="label" id="budget-label">WEEKLY LIMIT</span>
+  <div class="budget-row">
+    <span class="mono" id="budget-used" style="font-size:14px">0</span>
+    <span class="budget-pct" id="budget-pct">0%</span>
+  </div>
+  <div class="progress" id="budget-bar"></div>
+  <div class="label budget-note" id="budget-note"></div>
+</section>
+
+<section>
+  <span class="label">LETZTE 30 TAGE</span>
+  <div class="chart" id="chart"></div>
+  <div class="chart-meta">
+    <span class="label"><i class="legend" style="background:var(--text-display)"></i>INPUT (KONTEXT)</span>
+    <span class="label"><i class="legend" style="background:var(--text-disabled)"></i>OUTPUT</span>
+  </div>
+</section>
+
+<section>
+  <span class="label">TOP SESSIONS</span>
+  <div class="rowlist" id="sessions"></div>
+</section>
+
+<section>
+  <span class="label">MODELL-VERTEILUNG</span>
+  <div class="rowlist" id="models"></div>
+</section>
+
+<section>
+  <span class="label">TOP TOOLS</span>
+  <div class="toolgrid" id="tools"></div>
+</section>
+
+<section>
+  <span class="label">ACHIEVEMENTS</span>
+  <div class="badges" id="badges"></div>
+</section>
+
+<footer>
+  <span class="label" id="generated"></span>
+  <span class="label">QUELLE: NG-SESSIONS.SQLITE · LOKAL</span>
+</footer>
+
+<script src="data.js"></script>
+<script>
+(function () {
+  const D = window.BIONIC_DATA;
+  const fmt = n => n.toLocaleString("de-DE");
+  const kfmt = n => n >= 1e6 ? (n / 1e6).toFixed(n >= 1e7 ? 0 : 1) + "M"
+                  : n >= 1e3 ? Math.round(n / 1e3) + "k" : String(n);
+
+  const PERIODS = {
+    week:  { key: "week",  prev: "prev_week",  label: "TOKENS · DIESE WOCHE",  budget: "weekly_token_budget",  prevLabel: "VS. LETZTE WOCHE" },
+    month: { key: "month", prev: "prev_month", label: "TOKENS · DIESER MONAT", budget: "monthly_token_budget", prevLabel: "VS. VORMONAT" },
+    all:   { key: "all",   prev: null,         label: "TOKENS · GESAMT",       budget: null,                   prevLabel: "" },
+  };
+  let period = "week";
+
+  const $ = id => document.getElementById(id);
+
+  function periodSessions(p) {
+    return p === "all" ? D.top_sessions.all : D.top_sessions[p];
+  }
+  function periodModels(p) {
+    return p === "month" ? D.per_model_month : p === "week" ? D.per_model_week : null;
+  }
+
+  function render() {
+    const P = PERIODS[period];
+    const t = D.totals[P.key];
+    const total = t.input + t.output;
+
+    $("hero-label").textContent = P.label;
+    $("hero-num").textContent = fmt(total);
+    $("hero-in").textContent = kfmt(t.input);
+    $("hero-out").textContent = kfmt(t.output);
+    $("hero-delta").parentNode.querySelector(".l").textContent = P.prevLabel || "VS. VORPERIODE";
+    if (P.prev) {
+      const pt = D.totals[P.prev];
+      const ptotal = pt.input + pt.output;
+      $("hero-delta").textContent = ptotal > 0 ? ((total - ptotal) / ptotal * 100).toFixed(0) + "%" : "—";
+    } else {
+      $("hero-delta").textContent = "—";
+    }
+    $("hero-streak").textContent = D.streak_days;
+
+    // weekly limit section: official data if available, config budget otherwise
+    const budSec = $("budget-section");
+    const L = D.limit;
+    const bar = $("budget-bar");
+    const segs = 40;
+    bar.innerHTML = "";
+    if (L && period === "week") {
+      budSec.style.display = "";
+      $("budget-label").textContent = "WEEKLY LIMIT · " + (L.plan || "BIONIC+") + " · OFFIZIELL";
+      const leftPct = L.remaining_basis_points / 100; // % LEFT
+      const usedPct = 100 - leftPct;
+      const limitTokens = L.limit_microcredits * (D.config.weekly_token_budget / L.limit_microcredits);
+      const leftTokens = L.remaining_microcredits * (D.config.weekly_token_budget / L.limit_microcredits);
+      $("budget-used").textContent = kfmt(Math.round(limitTokens - leftTokens)) + " / " + kfmt(limitTokens);
+      $("budget-pct").textContent = usedPct.toFixed(1) + "%";
+      bar.className = "progress" + (usedPct >= 100 ? " over" : usedPct > 75 ? " warn" : "");
+      for (let i = 0; i < segs; i++) {
+        const s = document.createElement("span");
+        if (i / segs * 100 < usedPct) s.className = "filled";
+        bar.appendChild(s);
+      }
+      const reset = new Date(L.resets_at_iso);
+      const gen = new Date(L.generated_at_iso);
+      const hrs = Math.max(0, (reset - Date.now()) / 3600000);
+      $("budget-note").textContent = kfmt(Math.round(leftTokens)) + " TOKENS ÜBRIG · RESET IN ~"
+        + (hrs >= 24 ? (hrs / 24).toFixed(1) + " TAGEN" : hrs.toFixed(1) + " H")
+        + " · STAND " + gen.toLocaleTimeString("de-DE", { hour: "2-digit", minute: "2-digit" });
+    } else if (P.budget) {
+      budSec.style.display = "";
+      $("budget-label").textContent = period === "month" ? "MONTHLY BUDGET" : "WEEKLY BUDGET";
+      const budget = D.config[P.budget];
+      const pct = Math.min(100, total / budget * 100);
+      $("budget-used").textContent = kfmt(total) + " / " + kfmt(budget);
+      $("budget-pct").textContent = pct.toFixed(0) + "%";
+      bar.className = "progress" + (total / budget > 1 ? " over" : total / budget > 0.75 ? " warn" : "");
+      for (let i = 0; i < segs; i++) {
+        const s = document.createElement("span");
+        if (i / segs * 100 < pct) s.className = "filled";
+        bar.appendChild(s);
+      }
+      $("budget-note").textContent = total > budget
+        ? "LIMIT ÜBERSCHRITTEN"
+        : "NOCH " + kfmt(Math.max(0, budget - total)) + " TOKENS ÜBRIG";
+    } else {
+      budSec.style.display = "none";
+    }
+
+    // daily chart
+    const chart = $("chart");
+    chart.innerHTML = "";
+    const maxDay = Math.max(...D.daily_series.map(d => d.input + d.output), 1);
+    D.daily_series.forEach(d => {
+      const bar = document.createElement("div");
+      bar.className = "bar";
+      bar.title = d.day + ": " + fmt(d.input + d.output) + " tokens";
+      const inp = document.createElement("i");
+      inp.className = "in";
+      inp.style.height = (d.input / maxDay * 100) + "%";
+      const out = document.createElement("i");
+      out.className = "out";
+      out.style.height = (d.output / maxDay * 100) + "%";
+      bar.appendChild(inp); bar.appendChild(out);
+      chart.appendChild(bar);
+    });
+
+    // top sessions
+    const rows = periodSessions(period);
+    const maxTok = Math.max(...rows.map(r => r.tokens), 1);
+    $("sessions").innerHTML = rows.map((r, i) => `
+      <div class="row">
+        <span class="rank">${String(i + 1).padStart(2, "0")}</span>
+        <span class="name">${escapeHtml(r.name)}<span class="model">${escapeHtml(r.model)}</span></span>
+        <span class="barwrap"><i style="width:${r.tokens / maxTok * 100}%"></i></span>
+        <span class="val">${kfmt(r.tokens)}</span>
+      </div>`).join("") || `<div class="label">KEINE DATEN</div>`;
+
+    // models
+    const models = periodModels(period);
+    if (models) {
+      const mrows = Object.entries(models).sort((a, b) => b[1] - a[1]);
+      const mmax = Math.max(...mrows.map(m => m[1]), 1);
+      const mtot = mrows.reduce((a, m) => a + m[1], 0) || 1;
+      $("models").innerHTML = mrows.map(([m, v]) => `
+        <div class="row" style="grid-template-columns:1fr 200px 96px">
+          <span class="name">${escapeHtml(m)}</span>
+          <span class="barwrap"><i style="width:${v / mmax * 100}%"></i></span>
+          <span class="val">${(v / mtot * 100).toFixed(0)}%</span>
+        </div>`).join("") || `<div class="label">KEINE DATEN</div>`;
+    } else {
+      $("models").innerHTML = `<div class="label">NUR FÜR WOCHE/MONAT</div>`;
+    }
+
+    // tools
+    const tools = Object.entries(D.per_tool_week).sort((a, b) => b[1] - a[1]).slice(0, 12);
+    $("tools").innerHTML = tools.map(([n, c]) =>
+      `<div class="t"><span class="n">${escapeHtml(n)}</span><span class="c">${c}</span></div>`).join("");
+
+    // achievements
+    renderBadges();
+
+    $("generated").textContent = "GENERIERT: " +
+      new Date(D.generated_at * 1000).toLocaleString("de-DE");
+  }
+
+  function renderBadges() {
+    const t = D.totals.week;
+    const weekTotal = t.input + t.output;
+    const badges = [
+      { earned: D.streak_days >= 3, name: "STREAK ×" + D.streak_days, hint: "3+ TAGE AKTIV" },
+      { earned: D.flags.deep_dive, name: "DEEP DIVE", hint: "100K+ KONTEXT" },
+      { earned: D.flags.night_owl, name: "NIGHT SHIFT", hint: "AKTIV NACH 23 UHR" },
+      { earned: t.tool_calls >= 500, name: "TOOL SMITH", hint: "500+ TOOL-CALLS" },
+      { earned: (D.flags.top_context_tokens || 0) >= 200000, name: "HEAVY CONTEXT", hint: "200K+ PEAK-KONTEXT" },
+      { earned: weekTotal >= 1000000, name: "MEGAWATT", hint: "1M+ TOKENS/WOCHE" },
+      { earned: Object.keys(D.per_model_week).length >= 3, name: "MULTI-TOOL", hint: "3+ MODELLE" },
+    ];
+    $("badges").innerHTML = badges.map(b =>
+      `<span class="badge ${b.earned ? "earned" : ""}">${b.name}<span class="hint">${b.hint}</span></span>`).join("");
+  }
+
+  function escapeHtml(s) {
+    return String(s).replace(/[&<>"']/g, c => ({
+      "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
+    }[c]));
+  }
+
+  document.getElementById("toggle").addEventListener("click", e => {
+    const btn = e.target.closest("button");
+    if (!btn) return;
+    period = btn.dataset.period;
+    document.querySelectorAll("#toggle button").forEach(b =>
+      b.classList.toggle("active", b === btn));
+    render();
+  });
+
+  render();
+})();
+</script>
+</body>
+</html>

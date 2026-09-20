@@ -1,0 +1,6 @@
+# Personal usage data — never commit
+data.json
+data.js
+!sample/data.js
+
+.DS_Store

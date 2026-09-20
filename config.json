@@ -1,0 +1,5 @@
+{
+  "weekly_token_budget": 1000000,
+  "monthly_token_budget": 4000000,
+  "deep_dive_context_tokens": 100000
+}
