@@ -324,9 +324,15 @@
       const reset = new Date(L.resets_at_iso);
       const gen = new Date(L.generated_at_iso);
       const hrs = Math.max(0, (reset - Date.now()) / 3600000);
-      $("budget-note").textContent = kfmt(Math.round(leftTokens)) + " TOKENS ÜBRIG · RESET IN ~"
+      const age = D.limit_age_minutes;
+      let note = kfmt(Math.round(leftTokens)) + " TOKENS ÜBRIG · RESET IN ~"
         + (hrs >= 24 ? (hrs / 24).toFixed(1) + " TAGEN" : hrs.toFixed(1) + " H")
         + " · STAND " + gen.toLocaleTimeString("de-DE", { hour: "2-digit", minute: "2-digit" });
+      if (age != null && age > 30) {
+        note += " · [CACHE " + age + " MIN ALT — LIVE: BIONIC SETTINGS → BILLING AND USAGE ÖFFNEN]";
+        $("budget-label").textContent = "WEEKLY LIMIT · " + (L.plan || "BIONIC+") + " · OFFIZIELL ⚠";
+      }
+      $("budget-note").textContent = note;
     } else if (P.budget) {
       budSec.style.display = "";
       $("budget-label").textContent = period === "month" ? "MONTHLY BUDGET" : "WEEKLY BUDGET";

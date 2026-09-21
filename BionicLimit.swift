@@ -4,8 +4,7 @@ import AppKit
 // Reads Bionic's own local cache (~/.lmstudio/apps/bionic/.internal/cloud-account.json).
 
 let cachePath = NSHomeDirectory() + "/.lmstudio/apps/bionic/.internal/cloud-account.json"
-// Where dashboard.html lives. Either set the env var BIONIC_DASHBOARD_PATH
-// (e.g. in the LaunchAgent) or hardcode your path here.
+let configPath = NSHomeDirectory() + "/Documents/Keanu-Vault/config-bionic-limit.json" // unused, see below
 let dashPath = ProcessInfo.processInfo.environment["BIONIC_DASHBOARD_PATH"]
     ?? "/path/to/bionic-usage-dashboard"
 
@@ -18,7 +17,7 @@ func readDict(_ path: String) -> [String: Any]? {
 
 func tokensPerMicrocredit() -> Double {
     // calibration from the dashboard's config.json: weekly budget / 10000 microcredits
-    if let cfg = readDict(dashPath + "/config.json"),
+    if let cfg = readDict(NSHomeDirectory() + "/.lmstudio/apps/bionic/projects/d49037d8-47f4-5808-9028-c707de117f8f/workspace/bionic-dashboard/config.json"),
        let budget = cfg["weekly_token_budget"] as? Double {
         return budget / 10000.0
     }
@@ -28,8 +27,8 @@ func tokensPerMicrocredit() -> Double {
 final class AppDelegate: NSObject, NSApplicationDelegate {
     let item = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
     var timer: Timer?
-    var lastInfo: (leftPct: Double, leftTokens: Double, resetHours: Double, generated: String) =
-        (100, 0, 0, "")
+    var lastInfo: (leftPct: Double, leftTokens: Double, resetHours: Double, generated: String, ageMinutes: Double) =
+        (100, 0, 0, "", 0)
 
     func applicationDidFinishLaunching(_ notification: Notification) {
         item.button?.font = NSFont.monospacedSystemFont(ofSize: 12, weight: .medium)
@@ -49,7 +48,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             item.button?.title = "⚡ --"
             return
         }
-        var leftPct = 100.0, leftMicro = 0.0, resetHours = 0.0
+        var leftPct = 100.0, leftMicro = 0.0, resetHours = 0.0, ageMinutes = 0.0
         var generated = ""
         for lim in limits {
             guard let weekly = lim["weekly"] as? [String: Any],
@@ -63,11 +62,18 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             }
         }
         let leftTokens = leftMicro * tokensPerMicrocredit()
-        lastInfo = (leftPct, leftTokens, resetHours, generated)
+        lastInfo = (leftPct, leftTokens, resetHours, generated, ageMinutes)
 
-        let color: NSColor = leftPct <= 10 ? .systemRed : leftPct <= 25 ? .systemYellow : .labelColor
+        if let genDate = ISO8601DateFormatter().date(from: generated) {
+            ageMinutes = max(0, -genDate.timeIntervalSinceNow / 60)
+        }
+        let color: NSColor = leftPct <= 10 ? .systemRed
+            : leftPct <= 25 ? .systemYellow
+            : ageMinutes > 30 ? .disabledControlTextColor
+            : .labelColor
+        let prefix = ageMinutes > 30 ? "≈" : "⚡"
         let text = NSMutableAttributedString(
-            string: String(format: "⚡ %.1f%%", leftPct),
+            string: String(format: "%@ %.1f%%", prefix, leftPct),
             attributes: [.foregroundColor: color, .font: NSFont.monospacedSystemFont(ofSize: 12, weight: .medium)]
         )
         item.button?.attributedTitle = text
@@ -89,7 +95,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         row(lastInfo.resetHours >= 24
             ? String(format: "Resets in: %.1f days", lastInfo.resetHours / 24)
             : String(format: "Resets in: %.1f h", lastInfo.resetHours))
-        row("Data as of: " + (lastInfo.generated.count >= 16 ? String(lastInfo.generated.suffix(9).prefix(5)) : "?"))
+        row("Data as of: " + (lastInfo.generated.count >= 16 ? String(lastInfo.generated.suffix(9).prefix(5)) : "?") + (lastInfo.ageMinutes > 30 ? " (stale — open Bionic Settings → Billing and Usage)" : ""))
         menu.addItem(.separator())
         let open = NSMenuItem(title: "Open dashboard", action: #selector(openDashboard), keyEquivalent: "")
         open.target = self
